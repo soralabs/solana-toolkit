@@ -1,1 +1,3 @@
-# solana-toolkit
+# Solana Toolkit
+
+## Token Information
