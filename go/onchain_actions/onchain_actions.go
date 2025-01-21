@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
 	"sync"
 
 	"github.com/gagliardetto/solana-go/rpc"
@@ -60,7 +59,7 @@ func (t *OnchainActionsTool) GetSchema() toolkit.Schema {
                         },
                         "amount": {
                             "type": "number",
-                            "description": "Amount of tokens/SOL to transfer or interact with"
+                            "description": "Amount of tokens/SOL in LAMPORTS to transfer or interact with"
                         },
                         "token_mint": {
                             "type": "string",
