@@ -7,8 +7,10 @@ import (
 
 	"sync"
 
+	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/rpc"
 
+	"github.com/soralabs/solana-toolkit/go/internal/tx_parser"
 	toolkit "github.com/soralabs/toolkit/go"
 )
 
@@ -37,15 +39,15 @@ func (t *TransactionInformationTool) GetDescription() string {
 func (t *TransactionInformationTool) GetSchema() toolkit.Schema {
 	return toolkit.Schema{
 		Parameters: json.RawMessage(`{
-			"type": "object",
-			"required": ["hash"],
-			"properties": {
-				"hash": {
-					"type": "string",
-					"description": "The hash of the transaction"
-				}
-			}
-		}`),
+            "type": "object",
+            "required": ["hash"],
+            "properties": {
+                "hash": {
+                    "type": "string",
+                    "description": "The hash of the transaction"
+                }
+            }
+        }`),
 	}
 }
 
@@ -58,7 +60,32 @@ func (t *TransactionInformationTool) Execute(ctx context.Context, params json.Ra
 		return nil, fmt.Errorf("failed to parse parameters: %w", err)
 	}
 
+	txHash, err := solana.SignatureFromBase58(input.Hash)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse transaction hash: %w", err)
+	}
+
+	maxSupportedTxVersion := uint64(0)
+
+	tx, err := t.rpcClient.GetTransaction(ctx, txHash, &rpc.GetTransactionOpts{
+		MaxSupportedTransactionVersion: &maxSupportedTxVersion,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get transaction: %w", err)
+	}
+
+	parser, err := tx_parser.New(tx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create parser: %w", err)
+	}
+
+	swaps, err := parser.ParseTransaction()
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse transaction: %w", err)
+	}
+
 	return json.Marshal(TransactionInformationOutput{
-		Hash: input.Hash,
+		Hash:  input.Hash,
+		Swaps: swaps,
 	})
 }
