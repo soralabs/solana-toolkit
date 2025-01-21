@@ -3,9 +3,10 @@ package onchain_actions
 type Action string
 
 const (
-	ActionBuy    Action = "buy"
-	ActionSell   Action = "sell"
-	ActionCreate Action = "create"
+	ActionBuy      Action = "buy"
+	ActionSell     Action = "sell"
+	ActionTransfer Action = "transfer"
+	ActionCreate   Action = "create"
 )
 
 type Params struct {
