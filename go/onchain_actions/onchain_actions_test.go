@@ -52,7 +52,7 @@ func TestSwap(t *testing.T) {
 	// Test swap transaction creation
 	tx, err := tool.Swap(swapRequest, wallet.PrivateKey)
 	if err != nil {
-		t.Logf("Swap error (expected during test): %v", err)
+		t.Errorf("Swap error (expected during test): %v", err)
 	}
 	if tx != nil {
 		t.Log("Successfully created swap transaction")
@@ -71,7 +71,7 @@ func TestTransfer(t *testing.T) {
 	// Test transfer
 	tx, err := tool.Transfer(ctx, fromWallet.PrivateKey, toWallet.PublicKey(), 1000000)
 	if err != nil {
-		t.Logf("Transfer error (expected during test): %v", err)
+		t.Errorf("Transfer error (expected during test): %v", err)
 	}
 	if tx != nil {
 		t.Log("Successfully created transfer transaction")
@@ -99,6 +99,8 @@ func TestCreateToken(t *testing.T) {
 		BuyAmount:      1000000000, // 1 SOL
 	})
 	if err != nil {
-		t.Logf("Create token error (expected during test): %v", err)
+		t.Errorf("Create token error (expected during test): %v", err)
 	}
+
+	t.Log("Successfully created token")
 }
