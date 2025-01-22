@@ -11,10 +11,10 @@ func GetQuoteData(quoteRequest QuoteRequest) (interface{}, error) {
 	client := resty.New()
 
 	queryParams := map[string]string{
-		"inputMint":  quoteRequest.InputMint,
-		"outputMint": quoteRequest.OutputMint,
-		"amount":     quoteRequest.Amount,
-		"slippage":   quoteRequest.Slippage,
+		"inputMint":   quoteRequest.InputMint,
+		"outputMint":  quoteRequest.OutputMint,
+		"amount":      quoteRequest.Amount,
+		"slippageBps": quoteRequest.Slippage,
 	}
 
 	response, err := client.R().SetQueryParams(queryParams).Get("https://quote.jup.ag/v6/quote")
