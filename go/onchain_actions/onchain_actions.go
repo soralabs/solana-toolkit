@@ -68,7 +68,15 @@ func (t *OnchainActionsTool) GetSchema() toolkit.Schema {
                         "slippage": {
                             "type": "number",
                             "description": "Maximum acceptable slippage percentage for swaps"
-                        }
+                        },
+                        "token_name": {
+                            "type": "string",
+                            "description": "Name of the token to be created, when the action is create"
+                        },
+                        "token_symbol": {
+                            "type": "string",
+                            "description": "Symbol/ticker of the token to be created, when the action is create"
+                        },
                     }
                 }
             }

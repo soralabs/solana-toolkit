@@ -15,6 +15,8 @@ type Params struct {
 	Amount      float64 `json:"amount"`
 	TokenMint   string  `json:"token_mint"`
 	Slippage    float64 `json:"slippage"`
+	TokenName   string  `json:"token_name"`
+	TokenSymbol string  `json:"token_symbol"`
 }
 
 type OnchainActionsInput struct {
