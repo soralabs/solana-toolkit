@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/gagliardetto/solana-go/rpc"
+	"github.com/ilkamo/jupiter-go/jupiter"
 
 	toolkit "github.com/soralabs/toolkit/go"
 )
@@ -17,11 +18,19 @@ type OnchainActionsTool struct {
 	mu sync.Mutex
 
 	rpcClient *rpc.Client
+
+	jupClient *jupiter.ClientWithResponses
 }
 
 func NewOnchainActionsTool(rpcClient *rpc.Client) *OnchainActionsTool {
+	jupClient, err := jupiter.NewClientWithResponses(jupiter.DefaultAPIURL)
+	if err != nil {
+		panic(fmt.Errorf("failed to create Jupiter client: %w", err))
+	}
+
 	return &OnchainActionsTool{
 		rpcClient: rpcClient,
+		jupClient: jupClient,
 	}
 }
 

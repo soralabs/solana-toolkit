@@ -7,26 +7,46 @@ import (
 	"time"
 
 	"github.com/gagliardetto/solana-go"
-	"github.com/soralabs/solana-toolkit/go/internal/jupiter"
+	"github.com/ilkamo/jupiter-go/jupiter"
 )
 
 // Swap creates and signs a swap transaction with priority fees
-func (t *OnchainActionsTool) Swap(swapRequest jupiter.SwapRequest, signer solana.PrivateKey) (*solana.Transaction, error) {
-	swapTransactionResp, err := jupiter.GetSwapTransaction(swapRequest)
+func (t *OnchainActionsTool) Swap(ctx context.Context, quoteRequest jupiter.GetQuoteParams, signer solana.PrivateKey) (*solana.Transaction, error) {
+	// Get quote using Jupiter client
+	quoteResponse, err := t.jupClient.GetQuoteWithResponse(ctx, &quoteRequest)
 	if err != nil {
 		return nil, err
 	}
 
-	// Extract transaction string from response
-	swapTransactionBytes, ok := swapTransactionResp.([]byte)
-	if !ok {
-		return nil, fmt.Errorf("unexpected swap transaction response type")
+	if quoteResponse.JSON200 == nil {
+		return nil, fmt.Errorf("invalid GetQuoteWithResponse response")
 	}
 
-	swapTransactionStr := string(swapTransactionBytes)
+	// Setup swap request parameters
+	prioritizationFeeLamports := jupiter.SwapRequest_PrioritizationFeeLamports{}
+	if err = prioritizationFeeLamports.UnmarshalJSON([]byte(`"auto"`)); err != nil {
+		return nil, err
+	}
+
+	dynamicComputeUnitLimit := true
+
+	// Get swap transaction
+	swapResponse, err := t.jupClient.PostSwapWithResponse(ctx, jupiter.PostSwapJSONRequestBody{
+		PrioritizationFeeLamports: &prioritizationFeeLamports,
+		QuoteResponse:             *quoteResponse.JSON200,
+		UserPublicKey:             signer.PublicKey().String(),
+		DynamicComputeUnitLimit:   &dynamicComputeUnitLimit,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if swapResponse.JSON200 == nil {
+		return nil, fmt.Errorf("invalid PostSwapWithResponse response")
+	}
 
 	// Decode base64 transaction
-	txBytes, err := base64.StdEncoding.DecodeString(swapTransactionStr)
+	txBytes, err := base64.StdEncoding.DecodeString(swapResponse.JSON200.SwapTransaction)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode base64 transaction: %w", err)
 	}

@@ -6,7 +6,7 @@ import (
 
 	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/rpc"
-	"github.com/soralabs/solana-toolkit/go/internal/jupiter"
+	"github.com/ilkamo/jupiter-go/jupiter"
 	"github.com/soralabs/solana-toolkit/go/internal/pumpfun"
 )
 
@@ -30,33 +30,29 @@ func TestSwap(t *testing.T) {
 	wallet := solana.NewWallet()
 
 	// First get a quote
-	quoteReq := jupiter.QuoteRequest{
+	quoteReq := jupiter.GetQuoteParams{
 		InputMint:  "So11111111111111111111111111111111111111112",  // SOL
 		OutputMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", // USDC
-		Amount:     "1000000",                                      // 1 SOL in lamports
-		Slippage:   "100",                                          // 1% slippage
+		Amount:     1000000,                                        // 0.01 SOL
 	}
 
-	quote, err := jupiter.GetQuoteData(quoteReq)
-	if err != nil {
-		t.Logf("Quote error (expected during test): %v", err)
-		return
-	}
-
-	// Create swap request with the quote
-	swapRequest := jupiter.SwapRequest{
-		Quote:         quote,
-		UserPublicKey: wallet.PublicKey().String(),
-	}
+	ctx := context.Background()
 
 	// Test swap transaction creation
-	tx, err := tool.Swap(swapRequest, wallet.PrivateKey)
+	tx, err := tool.Swap(ctx, quoteReq, wallet.PrivateKey)
 	if err != nil {
-		t.Errorf("Swap error (expected during test): %v", err)
+		t.Fatalf("Swap error (expected during test): %v", err)
 	}
 	if tx != nil {
 		t.Log("Successfully created swap transaction")
 	}
+
+	sentSwapTx, err := tool.SendSwapTransaction(ctx, tx)
+	if err != nil {
+		t.Fatalf("Send swap transaction error (expected during test): %v", err)
+	}
+
+	t.Logf("Successfully sent swap transaction: %s", sentSwapTx.String())
 }
 
 func TestTransfer(t *testing.T) {
