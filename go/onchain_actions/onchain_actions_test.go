@@ -2,16 +2,23 @@ package onchain_actions
 
 import (
 	"context"
+	"os"
 	"testing"
 
 	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/rpc"
 	"github.com/ilkamo/jupiter-go/jupiter"
+	"github.com/joho/godotenv"
 	"github.com/soralabs/solana-toolkit/go/internal/pumpfun"
 )
 
 func TestNewOnchainActionsTool(t *testing.T) {
-	rpcClient := rpc.New("https://api.mainnet-beta.solana.com")
+	err := godotenv.Load()
+	if err != nil {
+		t.Fatalf("Error loading .env file: %v", err)
+	}
+
+	rpcClient := rpc.New(os.Getenv("RPC_URL"))
 	tool := NewOnchainActionsTool(rpcClient)
 
 	if tool == nil {
@@ -23,11 +30,15 @@ func TestNewOnchainActionsTool(t *testing.T) {
 }
 
 func TestSwap(t *testing.T) {
-	rpcClient := rpc.New("https://api.mainnet-beta.solana.com")
+	err := godotenv.Load()
+	if err != nil {
+		t.Fatalf("Error loading .env file: %v", err)
+	}
+
+	rpcClient := rpc.New(os.Getenv("RPC_URL"))
 	tool := NewOnchainActionsTool(rpcClient)
 
-	// Generate a test wallet
-	wallet := solana.NewWallet()
+	wallet := solana.MustPrivateKeyFromBase58(os.Getenv("PRIVATE_KEY"))
 
 	// First get a quote
 	quoteReq := jupiter.GetQuoteParams{
@@ -39,7 +50,7 @@ func TestSwap(t *testing.T) {
 	ctx := context.Background()
 
 	// Test swap transaction creation
-	tx, err := tool.Swap(ctx, quoteReq, wallet.PrivateKey)
+	tx, err := tool.Swap(ctx, quoteReq, wallet)
 	if err != nil {
 		t.Fatalf("Swap error (expected during test): %v", err)
 	}
@@ -56,16 +67,21 @@ func TestSwap(t *testing.T) {
 }
 
 func TestTransfer(t *testing.T) {
+	err := godotenv.Load()
+	if err != nil {
+		t.Fatalf("Error loading .env file: %v", err)
+	}
+
 	ctx := context.Background()
-	rpcClient := rpc.New("https://api.mainnet-beta.solana.com")
+	rpcClient := rpc.New(os.Getenv("RPC_URL"))
+	wallet := solana.MustPrivateKeyFromBase58(os.Getenv("PRIVATE_KEY"))
 	tool := NewOnchainActionsTool(rpcClient)
 
 	// Generate test wallets
-	fromWallet := solana.NewWallet()
 	toWallet := solana.NewWallet()
 
 	// Test transfer
-	tx, err := tool.Transfer(ctx, fromWallet.PrivateKey, toWallet.PublicKey(), 1000000)
+	tx, err := tool.Transfer(ctx, wallet, toWallet.PublicKey(), 1000000)
 	if err != nil {
 		t.Errorf("Transfer error (expected during test): %v", err)
 	}
@@ -75,28 +91,35 @@ func TestTransfer(t *testing.T) {
 }
 
 func TestCreateToken(t *testing.T) {
+	err := godotenv.Load()
+	if err != nil {
+		t.Fatalf("Error loading .env file: %v", err)
+	}
+
 	ctx := context.Background()
-	rpcClient := rpc.New("https://api.mainnet-beta.solana.com")
+
+	rpcClient := rpc.New(os.Getenv("RPC_URL"))
+	wallet := solana.MustPrivateKeyFromBase58(os.Getenv("PRIVATE_KEY"))
+
 	tool := NewOnchainActionsTool(rpcClient)
 
-	// Generate test wallet
-	wallet := solana.NewWallet()
 	mintWallet := solana.NewWallet()
 
 	// Test token creation
-	err := tool.CreateToken(ctx, CreateTokenParams{
+	err = tool.CreateToken(ctx, CreateTokenParams{
 		TokenInfo: pumpfun.CreateTokenInformation{
 			Name:     "Test Token",
 			Symbol:   "TEST",
 			ImageURI: "https://example.com/image.png",
 		},
-		Mint:           mintWallet,
-		UserPrivateKey: wallet.PrivateKey,
-		BuyAmount:      1000000000, // 1 SOL
+		Mint:            mintWallet,
+		UserPrivateKey:  wallet,
+		BuyAmount:       0.1,
+		SlippagePercent: 10,
 	})
 	if err != nil {
-		t.Errorf("Create token error (expected during test): %v", err)
+		t.Fatalf("Create token error (expected during test): %v", err)
 	}
 
-	t.Log("Successfully created token")
+	t.Log("Successfully created token with mint", mintWallet.PublicKey().String())
 }

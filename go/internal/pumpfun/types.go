@@ -40,11 +40,12 @@ type TokenInformation struct {
 }
 
 type CreateTokenRequest struct {
-	RpcClient      *rpc.Client
-	TokenInfo      CreateTokenInformation
-	Mint           *solana.Wallet
-	UserPrivateKey solana.PrivateKey
-	BuyAmount      uint64 // Amount of SOL to buy with (in lamports)
+	RpcClient       *rpc.Client
+	TokenInfo       CreateTokenInformation
+	Mint            *solana.Wallet
+	UserPrivateKey  solana.PrivateKey
+	BuyAmount       float64
+	SlippagePercent float64
 }
 
 type CreateTokenInformation struct {

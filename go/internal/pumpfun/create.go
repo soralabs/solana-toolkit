@@ -61,8 +61,9 @@ func CreateToken(ctx context.Context, request CreateTokenRequest) (solana.Signat
 			request.RpcClient,
 			request.Mint.PublicKey(),
 			request.UserPrivateKey.PublicKey(),
-			request.BuyAmount,
 			global,
+			request.BuyAmount,
+			request.SlippagePercent,
 		)
 		if err != nil {
 			return solana.Signature{}, fmt.Errorf("failed to build buy instructions: %w", err)
@@ -158,9 +159,13 @@ func buildBuyInstructions(
 	rpcClient *rpc.Client,
 	mint solana.PublicKey,
 	user solana.PublicKey,
-	solAmount uint64,
 	global *GlobalAccount,
+	solAmount float64,
+	slippagePercent float64,
 ) ([]solana.Instruction, error) {
+	// Convert SOL to lamports (1 SOL = 1e9 lamports)
+	lamports := uint64(solAmount * 1_000_000_000)
+
 	bondingCurve, associatedBondingCurve, err := DeriveBondingCurveAddresses(mint)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get bonding curve data: %w", err)
@@ -190,16 +195,19 @@ func buildBuyInstructions(
 		instructions = append(instructions, ataInstr)
 	}
 
-	buyAmount, err := calculateInitialBuyAmount(solAmount, global)
+	buyAmount, err := global.GetInitialBuyPrice(lamports)
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate initial buy amount: %w", err)
 	}
 
+	// Calculate buffer using provided slippage percentage (using lamports)
+	lamportsWithBuffer := uint64(float64(lamports) * (1 + slippagePercent/100))
+
 	buyInstr := pump.NewBuyInstruction(
 		buyAmount,
-		solAmount,
+		lamportsWithBuffer,
 		GlobalPumpFunAddress,
-		MintAuthority,
+		PumpFunFeeRecipient,
 		mint,
 		bondingCurve,
 		associatedBondingCurve,

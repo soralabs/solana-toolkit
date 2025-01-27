@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
+	"math/big"
 
 	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/rpc"
@@ -38,6 +39,50 @@ func (g *GlobalAccount) FromBuffer(data []byte) error {
 	g.FeeBasisPoints = binary.LittleEndian.Uint64(data[105:113])
 
 	return nil
+}
+
+func (g *GlobalAccount) GetInitialBuyPrice(solAmount uint64) (uint64, error) {
+	if solAmount <= 0 {
+		return 0, nil
+	}
+
+	// Use big.Int for calculations to prevent overflow
+	vSol := new(big.Int).SetUint64(g.InitialVirtualSolReserves)
+	vToken := new(big.Int).SetUint64(g.InitialVirtualTokenReserves)
+
+	// Add 5% buffer to solAmount for slippage
+	amount := new(big.Int).SetUint64(solAmount)
+	buffer := new(big.Int).Div(amount, big.NewInt(20)) // 5% = 1/20
+	amount = new(big.Int).Add(amount, buffer)
+
+	// Calculate k = x * y
+	k := new(big.Int).Mul(vSol, vToken)
+
+	// Calculate new sol reserves: i = x + amount
+	newSolReserves := new(big.Int).Add(vSol, amount)
+
+	// Calculate r = k/i (rounded up)
+	r := new(big.Int).Div(k, newSolReserves)
+	r.Add(r, big.NewInt(1)) // Add 1 to handle division rounding
+
+	// Calculate s = vToken - r
+	s := new(big.Int).Sub(vToken, r)
+
+	// Check if s is negative
+	if s.Sign() < 0 {
+		return 0, fmt.Errorf("negative token amount calculated")
+	}
+
+	// Convert back to uint64, checking for overflow
+	if !s.IsUint64() {
+		return 0, fmt.Errorf("token amount overflow")
+	}
+
+	result := s.Uint64()
+	if result < g.InitialRealTokenReserves {
+		return result, nil
+	}
+	return g.InitialRealTokenReserves, nil
 }
 
 func GetGlobalAccount(ctx context.Context, rpcClient *rpc.Client) (*GlobalAccount, error) {

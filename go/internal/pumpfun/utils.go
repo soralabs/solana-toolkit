@@ -41,10 +41,6 @@ func shouldCreateAta(rpcClient *rpc.Client, ata solana.PublicKey) (bool, error) 
 	return account == nil, nil
 }
 
-func convertSlippageBasisPointsToPercentage(basisPoints uint) float64 {
-	return float64(basisPoints) / 10000.0
-}
-
 func getComputeUnitPriceInstruction(ctx context.Context, rpcClient *rpc.Client, user solana.PrivateKey) (*computebudget.SetComputeUnitPrice, error) {
 	out, err := rpcClient.GetRecentPrioritizationFees(
 		ctx,
@@ -72,22 +68,4 @@ func getComputeUnitPriceInstruction(ctx context.Context, rpcClient *rpc.Client, 
 	median /= uint64(len(out))
 
 	return computebudget.NewSetComputeUnitPriceInstruction(median), nil
-}
-
-func calculateInitialBuyAmount(solAmount uint64, global *GlobalAccount) (uint64, error) {
-	if solAmount <= 0 {
-		return 0, nil
-	}
-
-	// Calculate using the constant product formula: k = x * y
-	// where k is constant, x is sol reserves, y is token reserves
-	n := global.InitialVirtualSolReserves * global.InitialVirtualTokenReserves
-	i := global.InitialVirtualSolReserves + solAmount
-	r := n/i + 1 // Add 1 to handle integer division rounding
-	s := global.InitialVirtualTokenReserves - r
-
-	if s < global.InitialRealTokenReserves {
-		return s, nil
-	}
-	return global.InitialRealTokenReserves, nil
 }
