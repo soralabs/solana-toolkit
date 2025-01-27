@@ -1,5 +1,10 @@
 package pumpfun
 
+import (
+	"github.com/gagliardetto/solana-go"
+	"github.com/gagliardetto/solana-go/rpc"
+)
+
 type TokenInformation struct {
 	Mint                   string  `json:"mint"`
 	Name                   string  `json:"name"`
@@ -32,4 +37,19 @@ type TokenInformation struct {
 	Username               any     `json:"username"`
 	ProfileImage           any     `json:"profile_image"`
 	UsdMarketCap           float64 `json:"usd_market_cap"`
+}
+
+type CreateTokenRequest struct {
+	RpcClient       *rpc.Client
+	TokenInfo       CreateTokenInformation
+	Mint            *solana.Wallet
+	UserPrivateKey  solana.PrivateKey
+	BuyAmount       float64
+	SlippagePercent float64
+}
+
+type CreateTokenInformation struct {
+	Name     string
+	Symbol   string
+	ImageURI string
 }
