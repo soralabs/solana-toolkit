@@ -9,13 +9,21 @@ require (
 )
 
 require (
+	github.com/andybalholm/brotli v1.1.1 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
+	github.com/bogdanfinn/fhttp v0.5.30 // indirect
+	github.com/bogdanfinn/tls-client v1.7.10 // indirect
+	github.com/bogdanfinn/utls v1.6.2 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
+	github.com/cloudflare/circl v1.5.0 // indirect
 	github.com/gorilla/rpc v1.2.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/ilkamo/jupiter-go v0.0.21 // indirect
 	github.com/oapi-codegen/runtime v1.1.1 // indirect
+	github.com/quic-go/quic-go v0.48.1 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
+	github.com/tam7t/hpkp v0.0.0-20160821193359-2b70b4024ed5 // indirect
+	golang.org/x/text v0.21.0 // indirect
 )
 
 require (
@@ -29,7 +37,7 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/joho/godotenv v1.5.1
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/klauspost/compress v1.16.7 // indirect
+	github.com/klauspost/compress v1.17.11 // indirect
 	github.com/logrusorgru/aurora v2.0.3+incompatible // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
