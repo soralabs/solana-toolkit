@@ -4,14 +4,13 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"time"
 
 	"github.com/gagliardetto/solana-go"
 	"github.com/ilkamo/jupiter-go/jupiter"
 )
 
 // Swap creates and signs a swap transaction with priority fees
-func (t *OnchainActionsTool) Swap(ctx context.Context, quoteRequest jupiter.GetQuoteParams, signer solana.PrivateKey) (*solana.Transaction, error) {
+func (t *OnchainActionsTool) Swap(ctx context.Context, quoteRequest jupiter.GetQuoteParams, signer solana.PrivateKey) (*solana.Signature, error) {
 	// Get quote using Jupiter client
 	quoteResponse, err := t.jupClient.GetQuoteWithResponse(ctx, &quoteRequest)
 	if err != nil {
@@ -65,36 +64,5 @@ func (t *OnchainActionsTool) Swap(ctx context.Context, quoteRequest jupiter.GetQ
 		return nil
 	})
 
-	return tx, nil
-}
-
-// SendSwapTransaction sends a signed swap transaction to the Solana network
-func (t *OnchainActionsTool) SendSwapTransaction(ctx context.Context, signedTx *solana.Transaction) (solana.Signature, error) {
-	sig, err := t.rpcClient.SendTransaction(ctx, signedTx)
-	if err != nil {
-		return solana.Signature{}, fmt.Errorf("failed to send transaction: %w", err)
-	}
-
-	// Wait for confirmation with retries
-	deadline := time.Now().Add(30 * time.Second)
-
-	for time.Now().Before(deadline) {
-		status, err := t.rpcClient.GetSignatureStatuses(ctx, true, sig)
-		if err != nil {
-			return sig, fmt.Errorf("failed to get transaction status: %w", err)
-		}
-
-		if status.Value[0] != nil {
-			if status.Value[0].Err != nil {
-				return sig, fmt.Errorf("transaction failed: %v", status.Value[0].Err)
-			}
-			if status.Value[0].Confirmations != nil && *status.Value[0].Confirmations > 0 {
-				return sig, nil
-			}
-		}
-
-		time.Sleep(500 * time.Millisecond)
-	}
-
-	return sig, fmt.Errorf("transaction confirmation timeout")
+	return t.sendTransacton(ctx, tx)
 }

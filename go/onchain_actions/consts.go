@@ -1,5 +1,7 @@
 package onchain_actions
 
-const (
-	WSOL_MINT = "So11111111111111111111111111111111111111112"
+import "github.com/gagliardetto/solana-go"
+
+var (
+	WSOL_MINT = solana.MustPublicKeyFromBase58("So11111111111111111111111111111111111111112")
 )

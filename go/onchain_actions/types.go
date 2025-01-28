@@ -12,11 +12,12 @@ const (
 type Params struct {
 	Source      string  `json:"source"`
 	Destination string  `json:"destination"`
-	Amount      float64 `json:"amount"`
 	TokenMint   string  `json:"token_mint"`
-	Slippage    float64 `json:"slippage"`
-	TokenName   string  `json:"token_name"`
-	TokenSymbol string  `json:"token_symbol"`
+	Amount      float64 `json:"amount"`
+
+	// Create params
+	TokenName   string `json:"token_name"`
+	TokenSymbol string `json:"token_symbol"`
 }
 
 type OnchainActionsInput struct {
@@ -25,4 +26,6 @@ type OnchainActionsInput struct {
 }
 
 type OnchainActionsOutput struct {
+	Signature   string  `json:"signature"`
+	MintAddress *string `json:"mint"`
 }

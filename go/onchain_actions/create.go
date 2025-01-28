@@ -16,8 +16,8 @@ type CreateTokenParams struct {
 	SlippagePercent float64
 }
 
-func (o *OnchainActionsTool) CreateToken(ctx context.Context, params CreateTokenParams) error {
-	_, err := pumpfun.CreateToken(ctx, pumpfun.CreateTokenRequest{
+func (o *OnchainActionsTool) CreateToken(ctx context.Context, params CreateTokenParams) (*solana.Signature, error) {
+	sig, err := pumpfun.CreateToken(ctx, pumpfun.CreateTokenRequest{
 		RpcClient:       o.rpcClient,
 		TokenInfo:       params.TokenInfo,
 		Mint:            params.Mint,
@@ -27,8 +27,8 @@ func (o *OnchainActionsTool) CreateToken(ctx context.Context, params CreateToken
 	})
 
 	if err != nil {
-		return fmt.Errorf("failed to create token: %w", err)
+		return nil, fmt.Errorf("failed to create token: %w", err)
 	}
 
-	return nil
+	return sig, nil
 }

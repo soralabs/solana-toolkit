@@ -14,17 +14,17 @@ import (
 	pump "github.com/soralabs/solana-toolkit/go/internal/pumpfun_anchor"
 )
 
-func CreateToken(ctx context.Context, request CreateTokenRequest) (solana.Signature, error) {
+func CreateToken(ctx context.Context, request CreateTokenRequest) (*solana.Signature, error) {
 	// Derive bonding curve addresses
 	bondingCurve, associatedBondingCurve, err := DeriveBondingCurveAddresses(request.Mint.PublicKey())
 	if err != nil {
-		return solana.Signature{}, fmt.Errorf("failed to derive bonding curve addresses: %w", err)
+		return nil, fmt.Errorf("failed to derive bonding curve addresses: %w", err)
 	}
 
 	// Get token metadata address
 	metadata, _, err := solana.FindTokenMetadataAddress(request.Mint.PublicKey())
 	if err != nil {
-		return solana.Signature{}, fmt.Errorf("failed to find token metadata address: %w", err)
+		return nil, fmt.Errorf("failed to find token metadata address: %w", err)
 	}
 
 	// Build transaction instructions
@@ -54,7 +54,7 @@ func CreateToken(ctx context.Context, request CreateTokenRequest) (solana.Signat
 		// Get global account data
 		global, err := GetGlobalAccount(ctx, request.RpcClient)
 		if err != nil {
-			return solana.Signature{}, fmt.Errorf("failed to get global account: %w", err)
+			return nil, fmt.Errorf("failed to get global account: %w", err)
 		}
 
 		buyInstructions, err := buildBuyInstructions(
@@ -66,7 +66,7 @@ func CreateToken(ctx context.Context, request CreateTokenRequest) (solana.Signat
 			request.SlippagePercent,
 		)
 		if err != nil {
-			return solana.Signature{}, fmt.Errorf("failed to build buy instructions: %w", err)
+			return nil, fmt.Errorf("failed to build buy instructions: %w", err)
 		}
 		instructions = append(instructions, buyInstructions...)
 	}
@@ -74,7 +74,7 @@ func CreateToken(ctx context.Context, request CreateTokenRequest) (solana.Signat
 	// Get recent blockhash
 	recent, err := request.RpcClient.GetLatestBlockhash(ctx, rpc.CommitmentFinalized)
 	if err != nil {
-		return solana.Signature{}, fmt.Errorf("failed to get recent blockhash: %w", err)
+		return nil, fmt.Errorf("failed to get recent blockhash: %w", err)
 	}
 
 	// Build and sign transaction
@@ -84,7 +84,7 @@ func CreateToken(ctx context.Context, request CreateTokenRequest) (solana.Signat
 		solana.TransactionPayer(request.UserPrivateKey.PublicKey()),
 	)
 	if err != nil {
-		return solana.Signature{}, fmt.Errorf("failed to create transaction: %w", err)
+		return nil, fmt.Errorf("failed to create transaction: %w", err)
 	}
 
 	// Sign transaction
@@ -98,13 +98,13 @@ func CreateToken(ctx context.Context, request CreateTokenRequest) (solana.Signat
 		return nil
 	})
 	if err != nil {
-		return solana.Signature{}, fmt.Errorf("failed to sign transaction: %w", err)
+		return nil, fmt.Errorf("failed to sign transaction: %w", err)
 	}
 
 	// Send transaction
 	sig, err := request.RpcClient.SendTransaction(ctx, tx)
 	if err != nil {
-		return solana.Signature{}, fmt.Errorf("failed to send transaction: %w", err)
+		return nil, fmt.Errorf("failed to send transaction: %w", err)
 	}
 
 	// Poll for confirmation
@@ -114,15 +114,15 @@ func CreateToken(ctx context.Context, request CreateTokenRequest) (solana.Signat
 	for {
 		select {
 		case <-ctx.Done():
-			return solana.Signature{}, fmt.Errorf("transaction confirmation timed out")
+			return nil, fmt.Errorf("transaction confirmation timed out")
 		default:
 			status, err := request.RpcClient.GetSignatureStatuses(ctx, true, sig)
 			if err != nil {
-				return solana.Signature{}, fmt.Errorf("failed to get signature status: %w", err)
+				return nil, fmt.Errorf("failed to get signature status: %w", err)
 			}
 
 			if status.Value[0] != nil && status.Value[0].Confirmations != nil && *status.Value[0].Confirmations > 0 {
-				return sig, nil
+				return &sig, nil
 			}
 
 			time.Sleep(500 * time.Millisecond)
