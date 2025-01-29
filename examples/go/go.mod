@@ -36,7 +36,7 @@ require (
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/oapi-codegen/runtime v1.1.1 // indirect
 	github.com/quic-go/quic-go v0.48.1 // indirect
-	github.com/soralabs/solana-toolkit/go v0.0.0-20250129021242-09082f343b9c
+	github.com/soralabs/solana-toolkit/go v0.0.0-20250129025811-3090f00dc33b
 	github.com/soralabs/toolkit/go v0.0.0-20250114215809-909fb87bac3e // indirect
 	github.com/streamingfast/logging v0.0.0-20230608130331-f22c91403091 // indirect
 	github.com/tam7t/hpkp v0.0.0-20160821193359-2b70b4024ed5 // indirect
