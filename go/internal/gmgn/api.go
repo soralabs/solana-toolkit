@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/url"
 	"strconv"
+	"time"
 
 	http "github.com/bogdanfinn/fhttp"
 )
@@ -151,6 +152,8 @@ func (g *GMGN) GetAllWalletHoldings(wallet string) ([]*WalletHoldingsData, error
 	// Keep getting next pages while there's a cursor
 	cursor := firstPage.Next
 	for cursor != "" {
+		time.Sleep(500 * time.Millisecond)
+
 		nextPage, err := g.GetWalletHoldingsNext(wallet, cursor, 50)
 		if err != nil {
 			return nil, err

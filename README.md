@@ -81,6 +81,17 @@ if err != nil {
 }
 ```
 
+For advanced usage and OpenAI Function Calling integration examples, please see the complete implementation in the [examples/go/openai_integration](examples/go/openai_integration) directory.
+
+The toolkit provides built-in functions that can be directly used with OpenAI's function calling feature. These functions include:
+- Token information retrieval
+- Wallet analysis
+- Transaction parsing
+- Trading operations
+- And more
+
+The `GetTools()` method returns these functions in the format required by OpenAI's API, making it seamless to integrate blockchain functionality with AI.
+
 ## Contributing
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.

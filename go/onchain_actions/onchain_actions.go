@@ -83,7 +83,7 @@ func (t *OnchainActionsTool) GetSchema() toolkit.Schema {
                         "token_symbol": {
                             "type": "string",
                             "description": "Symbol/ticker of the token to be created, when the action is create"
-                        },
+                        }
                     }
                 }
             }
