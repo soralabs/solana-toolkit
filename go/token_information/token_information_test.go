@@ -19,9 +19,12 @@ func TestTokenInformation(t *testing.T) {
 
 	soraTokenAddress := "89nnWMkWeF9LSJvAWcN2JFQfeWdDk6diKEckeToEU1hE"
 
-	tokenInformationTool := NewTokenInformationTool(
+	tokenInformationTool, err := NewTokenInformationTool(
 		rpc.New(os.Getenv("RPC_URL")),
 	)
+	if err != nil {
+		t.Fatalf("failed to create token information tool: %v", err)
+	}
 
 	input := TokenInformationInput{
 		TokenAddress: soraTokenAddress,

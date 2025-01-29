@@ -22,10 +22,10 @@ type TransactionInformationTool struct {
 	rpcClient *rpc.Client
 }
 
-func NewTransactionInformationTool(rpcClient *rpc.Client) *TransactionInformationTool {
+func NewTransactionInformationTool(rpcClient *rpc.Client) (*TransactionInformationTool, error) {
 	return &TransactionInformationTool{
 		rpcClient: rpcClient,
-	}
+	}, nil
 }
 
 func (t *TransactionInformationTool) GetName() string {

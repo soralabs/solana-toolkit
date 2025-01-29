@@ -19,7 +19,10 @@ func TestNewOnchainActionsTool(t *testing.T) {
 	}
 
 	rpcClient := rpc.New(os.Getenv("RPC_URL"))
-	tool := NewOnchainActionsTool(rpcClient)
+	tool, err := NewOnchainActionsTool(rpcClient)
+	if err != nil {
+		t.Fatalf("failed to create onchain actions tool: %v", err)
+	}
 
 	if tool == nil {
 		t.Fatal("Expected non-nil tool")
@@ -36,7 +39,10 @@ func TestSwap(t *testing.T) {
 	}
 
 	rpcClient := rpc.New(os.Getenv("RPC_URL"))
-	tool := NewOnchainActionsTool(rpcClient)
+	tool, err := NewOnchainActionsTool(rpcClient)
+	if err != nil {
+		t.Fatalf("failed to create onchain actions tool: %v", err)
+	}
 
 	wallet := solana.MustPrivateKeyFromBase58(os.Getenv("PRIVATE_KEY"))
 
@@ -70,7 +76,10 @@ func TestTransfer(t *testing.T) {
 	ctx := context.Background()
 	rpcClient := rpc.New(os.Getenv("RPC_URL"))
 	wallet := solana.MustPrivateKeyFromBase58(os.Getenv("PRIVATE_KEY"))
-	tool := NewOnchainActionsTool(rpcClient)
+	tool, err := NewOnchainActionsTool(rpcClient)
+	if err != nil {
+		t.Fatalf("failed to create onchain actions tool: %v", err)
+	}
 
 	// Generate test wallets
 	toWallet := solana.NewWallet()
@@ -96,7 +105,10 @@ func TestCreateToken(t *testing.T) {
 	rpcClient := rpc.New(os.Getenv("RPC_URL"))
 	wallet := solana.MustPrivateKeyFromBase58(os.Getenv("PRIVATE_KEY"))
 
-	tool := NewOnchainActionsTool(rpcClient)
+	tool, err := NewOnchainActionsTool(rpcClient)
+	if err != nil {
+		t.Fatalf("failed to create onchain actions tool: %v", err)
+	}
 
 	mintWallet := solana.NewWallet()
 

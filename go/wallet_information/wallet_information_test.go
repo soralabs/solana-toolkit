@@ -17,7 +17,10 @@ func TestNewWalletInformationTool(t *testing.T) {
 	}
 
 	rpcClient := rpc.New(os.Getenv("RPC_URL"))
-	tool := NewWalletInformationTool(rpcClient)
+	tool, err := NewWalletInformationTool(rpcClient)
+	if err != nil {
+		t.Fatalf("failed to create wallet information tool: %v", err)
+	}
 
 	if tool == nil {
 		t.Fatal("Expected non-nil tool")
@@ -35,7 +38,10 @@ func TestGetWalletInformation(t *testing.T) {
 
 	ctx := context.Background()
 	rpcClient := rpc.New(os.Getenv("RPC_URL"))
-	tool := NewWalletInformationTool(rpcClient)
+	tool, err := NewWalletInformationTool(rpcClient)
+	if err != nil {
+		t.Fatalf("failed to create wallet information tool: %v", err)
+	}
 
 	// Use a testing wallet
 	testWallet := os.Getenv("TEST_WALLET")

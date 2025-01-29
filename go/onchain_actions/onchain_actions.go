@@ -24,16 +24,16 @@ type OnchainActionsTool struct {
 	jupClient *jupiter.ClientWithResponses
 }
 
-func NewOnchainActionsTool(rpcClient *rpc.Client) *OnchainActionsTool {
+func NewOnchainActionsTool(rpcClient *rpc.Client) (*OnchainActionsTool, error) {
 	jupClient, err := jupiter.NewClientWithResponses(jupiter.DefaultAPIURL)
 	if err != nil {
-		panic(fmt.Errorf("failed to create Jupiter client: %w", err))
+		return nil, fmt.Errorf("failed to create Jupiter client: %w", err)
 	}
 
 	return &OnchainActionsTool{
 		rpcClient: rpcClient,
 		jupClient: jupClient,
-	}
+	}, nil
 }
 
 func (t *OnchainActionsTool) GetName() string {

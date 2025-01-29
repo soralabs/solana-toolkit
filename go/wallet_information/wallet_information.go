@@ -27,7 +27,7 @@ type WalletInformationTool struct {
 	gmgnClient *gmgn.GMGN
 }
 
-func NewWalletInformationTool(rpcClient *rpc.Client) *WalletInformationTool {
+func NewWalletInformationTool(rpcClient *rpc.Client) (*WalletInformationTool, error) {
 	jar := tls_client.NewCookieJar()
 	options := []tls_client.HttpClientOption{
 		tls_client.WithTimeoutSeconds(30),
@@ -38,13 +38,13 @@ func NewWalletInformationTool(rpcClient *rpc.Client) *WalletInformationTool {
 
 	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(), options...)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	return &WalletInformationTool{
 		rpcClient:  rpcClient,
 		gmgnClient: gmgn.New(client),
-	}
+	}, nil
 }
 
 func (t *WalletInformationTool) GetName() string {

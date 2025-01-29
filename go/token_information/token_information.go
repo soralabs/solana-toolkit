@@ -25,10 +25,10 @@ type TokenInformationTool struct {
 
 // NewTokenInformationTool creates a new instance of TokenInformationTool with the given RPC client.
 // This tool is responsible for fetching information about Solana tokens.
-func NewTokenInformationTool(rpcClient *rpc.Client) *TokenInformationTool {
+func NewTokenInformationTool(rpcClient *rpc.Client) (*TokenInformationTool, error) {
 	return &TokenInformationTool{
 		rpcClient: rpcClient,
-	}
+	}, nil
 }
 
 // GetName returns the name of the tool.

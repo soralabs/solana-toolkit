@@ -3,7 +3,7 @@
 <div align="center">
   <img src="./img/sora_readme_banner.png" alt="Sora Banner" width="100%" />
   <p align="center">
-    <strong>A comprehensive toolkit for building and managing Solana applications</strong>
+    <strong>A comprehensive toolkit for building on and interacting with the Solana blockchain</strong>
   </p>
 </div>
 
@@ -23,6 +23,7 @@
   - Holder statistics and distribution
   - Social media links
   - Price change tracking (5m, 1h, 6h, 24h)
+  - PumpFun token detection
 - **Token Creation**: Launch new tokens through the pump.fun platform with customizable parameters
   - Set token name, symbol, and image
   - Configure initial buy amount and slippage
@@ -34,10 +35,11 @@
   - Transaction history
   - Portfolio value tracking
   - Associated accounts
+  - GMGN integration for enhanced wallet data
 
 ### Transaction Tools
 - **Transaction Analysis**: Parse and understand transaction data
-  - Detailed swap information
+  - Detailed swap information across multiple DEXes (Jupiter, Pump.fun, OKX, etc.)
   - Transaction type identification
   - Complete transaction breakdown
   - Historical transaction lookup
@@ -51,9 +53,13 @@
 - **Token Transfers**: 
   - Send tokens between wallets
   - Support for SOL and SPL tokens
-  - Associated token account handling
+  - Automatic Associated Token Account (ATA) handling
 
 ## Installation
+
+### Prerequisites
+- Go 1.23.3 or later
+- Solana RPC endpoint
 
 ### Go
 ```bash
@@ -62,54 +68,17 @@ go get github.com/soralabs/solana-toolkit/go
 
 ## Usage
 
-### Token Information
+### Initialize Toolkit
 ```go
-import "github.com/soralabs/solana-toolkit/go/token_information"
+import (
+    toolkit "github.com/soralabs/solana-toolkit/go/toolkit"
+)
 
-// Initialize the tool with your RPC client
-tool := token_information.NewTokenInformationTool(rpcClient)
-
-// Get token information
-info, err := tool.Execute(context.Background(), TokenInformationInput{
-    TokenAddress: "your-token-address",
-})
-```
-
-### Create Token
-```go
-import "github.com/soralabs/solana-toolkit/go/onchain_actions"
-
-// Initialize the tool
-tool := onchain_actions.NewOnchainActionsTool(rpcClient)
-
-// Create token parameters
-params := CreateTokenParams{
-    TokenInfo: pumpfun.CreateTokenInformation{
-        Name:     "My Token",
-        Symbol:   "TKN",
-        ImageURI: "https://example.com/image.png",
-    },
-    Mint:            mintWallet,
-    UserPrivateKey:  wallet,
-    BuyAmount:       0.1,
-    SlippagePercent: 1.0,
+// Initialize toolkit
+tk, err := toolkit.New("your-rpc-url")
+if err != nil {
+    log.Fatal(err)
 }
-
-// Create the token
-signature, err := tool.CreateToken(context.Background(), params)
-```
-
-### Wallet Information
-```go
-import "github.com/soralabs/solana-toolkit/go/wallet_information"
-
-// Initialize the tool
-tool := wallet_information.NewWalletInformationTool(rpcClient)
-
-// Get wallet information
-info, err := tool.Execute(context.Background(), WalletInformationInput{
-    Wallet: "wallet-address",
-})
 ```
 
 ## Contributing
