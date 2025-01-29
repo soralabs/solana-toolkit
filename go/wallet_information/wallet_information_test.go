@@ -74,4 +74,5 @@ func TestGetWalletInformation(t *testing.T) {
 	t.Logf("Token Count: %d", output.TokenNum)
 	t.Logf("PNL (24h): %.2f", output.PNL1d*100)
 	t.Logf("Win Rate: %.2f%%", output.Winrate*100)
+	t.Logf("Holdings: %d", len(output.Holdings))
 }

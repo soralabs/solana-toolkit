@@ -89,56 +89,73 @@ func (t *WalletInformationTool) Execute(ctx context.Context, params json.RawMess
 		return nil, fmt.Errorf("failed to get wallet information: %w", err)
 	}
 
+	// Fetch holdings information
+	holdings, err := t.gmgnClient.GetAllWalletHoldings(wallet.String())
+	if err != nil {
+		return nil, fmt.Errorf("failed to get wallet holdings: %w", err)
+	}
+
+	// Convert holdings
+	convertedHoldings := make([]Holding, 0)
+	for _, h := range holdings {
+		for _, holding := range h.Holdings {
+			convertedHoldings = append(convertedHoldings, convertHolding(holding))
+		}
+	}
+
 	output := WalletInformationOutput{
 		// Wallet Address
 		Wallet: wallet.String(),
 
 		// Social Information
-		TwitterUsername: walletInfo.Data.TwitterUsername,
-		TwitterName:     walletInfo.Data.TwitterName,
-		TwitterFansNum:  walletInfo.Data.TwitterFansNum,
-		ENS:             walletInfo.Data.ENS,
-		Avatar:          walletInfo.Data.Avatar,
-		Name:            walletInfo.Data.Name,
+		TwitterUsername: walletInfo.TwitterUsername,
+		TwitterName:     walletInfo.TwitterName,
+		TwitterFansNum:  walletInfo.TwitterFansNum,
+		ENS:             walletInfo.ENS,
+		Avatar:          walletInfo.Avatar,
+		Name:            walletInfo.Name,
 
 		// Balance Information
-		SolBalance: walletInfo.Data.SolBalance,
-		TotalValue: walletInfo.Data.TotalValue,
-		TokenNum:   walletInfo.Data.TokenNum,
+		SolBalance: walletInfo.SolBalance,
+		TotalValue: walletInfo.TotalValue,
+		TokenNum:   walletInfo.TokenNum,
 
 		// Trading Performance
-		UnrealizedProfit: walletInfo.Data.UnrealizedProfit,
-		RealizedProfit:   walletInfo.Data.RealizedProfit,
-		PNL:              walletInfo.Data.PNL,
-		PNL1d:            walletInfo.Data.PNL1d,
-		PNL7d:            walletInfo.Data.PNL7d,
-		PNL30d:           walletInfo.Data.PNL30d,
-		Winrate:          walletInfo.Data.Winrate,
+		UnrealizedProfit: walletInfo.UnrealizedProfit,
+		RealizedProfit:   walletInfo.RealizedProfit,
+		PNL:              walletInfo.PNL,
+		PNL1d:            walletInfo.PNL1d,
+		PNL7d:            walletInfo.PNL7d,
+		PNL30d:           walletInfo.PNL30d,
+		Winrate:          walletInfo.Winrate,
 
 		// Trading Activity
-		Buy1d:   walletInfo.Data.Buy1d,
-		Sell1d:  walletInfo.Data.Sell1d,
-		Buy7d:   walletInfo.Data.Buy7d,
-		Sell7d:  walletInfo.Data.Sell7d,
-		Buy30d:  walletInfo.Data.Buy30d,
-		Sell30d: walletInfo.Data.Sell30d,
-		Buy:     walletInfo.Data.Buy,
-		Sell:    walletInfo.Data.Sell,
+		Buy1d:   walletInfo.Buy1d,
+		Sell1d:  walletInfo.Sell1d,
+		Buy7d:   walletInfo.Buy7d,
+		Sell7d:  walletInfo.Sell7d,
+		Buy30d:  walletInfo.Buy30d,
+		Sell30d: walletInfo.Sell30d,
+		Buy:     walletInfo.Buy,
+		Sell:    walletInfo.Sell,
 
 		// Risk Information
 		Risk: Risk{
-			TokenHoneypotRatio: walletInfo.Data.Risk.TokenHoneypotRatio,
-			NoBuyHoldRatio:     walletInfo.Data.Risk.NoBuyHoldRatio,
-			SellPassBuyRatio:   walletInfo.Data.Risk.SellPassBuyRatio,
-			FastTxRatio:        walletInfo.Data.Risk.FastTxRatio,
+			TokenHoneypotRatio: walletInfo.Risk.TokenHoneypotRatio,
+			NoBuyHoldRatio:     walletInfo.Risk.NoBuyHoldRatio,
+			SellPassBuyRatio:   walletInfo.Risk.SellPassBuyRatio,
+			FastTxRatio:        walletInfo.Risk.FastTxRatio,
 		},
 
 		// Additional Information
-		Tags:           walletInfo.Data.Tags,
-		TagRank:        walletInfo.Data.TagRank,
-		FollowersCount: walletInfo.Data.FollowersCount,
-		IsContract:     walletInfo.Data.IsContract,
-		UpdatedAt:      walletInfo.Data.UpdatedAt,
+		Tags:           walletInfo.Tags,
+		TagRank:        walletInfo.TagRank,
+		FollowersCount: walletInfo.FollowersCount,
+		IsContract:     walletInfo.IsContract,
+		UpdatedAt:      walletInfo.UpdatedAt,
+
+		// Add holdings information
+		Holdings: convertedHoldings,
 	}
 
 	return json.Marshal(output)

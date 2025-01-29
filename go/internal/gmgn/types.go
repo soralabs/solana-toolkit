@@ -75,3 +75,56 @@ type RiskInfo struct {
 	FastTx             string  `json:"fast_tx"`
 	FastTxRatio        float64 `json:"fast_tx_ratio"`
 }
+
+type Token struct {
+	Address       string `json:"address"`
+	TokenAddress  string `json:"token_address"`
+	Symbol        string `json:"symbol"`
+	Name          string `json:"name"`
+	Decimals      int    `json:"decimals"`
+	Logo          string `json:"logo"`
+	PriceChange6h string `json:"price_change_6h"`
+	IsShowAlert   bool   `json:"is_show_alert"`
+	IsHoneypot    *bool  `json:"is_honeypot"`
+}
+
+type Holding struct {
+	Token               Token    `json:"token"`
+	Balance             string   `json:"balance"`
+	USDValue            string   `json:"usd_value"`
+	RealizedProfit30d   string   `json:"realized_profit_30d"`
+	RealizedProfit      string   `json:"realized_profit"`
+	RealizedPNL         string   `json:"realized_pnl"`
+	RealizedPNL30d      string   `json:"realized_pnl_30d"`
+	UnrealizedProfit    string   `json:"unrealized_profit"`
+	UnrealizedPNL       string   `json:"unrealized_pnl"`
+	TotalProfit         string   `json:"total_profit"`
+	TotalProfitPNL      string   `json:"total_profit_pnl"`
+	AvgCost             string   `json:"avg_cost"`
+	AvgSold             string   `json:"avg_sold"`
+	Buy30d              int      `json:"buy_30d"`
+	Sell30d             int      `json:"sell_30d"`
+	Sells               int      `json:"sells"`
+	Price               string   `json:"price"`
+	Cost                string   `json:"cost"`
+	PositionPercent     string   `json:"position_percent"`
+	LastActiveTimestamp int64    `json:"last_active_timestamp"`
+	HistorySoldIncome   string   `json:"history_sold_income"`
+	HistoryBoughtCost   string   `json:"history_bought_cost"`
+	StartHoldingAt      *int64   `json:"start_holding_at"`
+	EndHoldingAt        *int64   `json:"end_holding_at"`
+	Liquidity           string   `json:"liquidity"`
+	WalletTokenTags     []string `json:"wallet_token_tags"`
+}
+
+type WalletHoldingsData struct {
+	Holdings []Holding `json:"holdings"`
+	Next     string    `json:"next"`
+}
+
+type WalletHoldingsResponse struct {
+	Code    int                `json:"code"`
+	Reason  string             `json:"reason"`
+	Message string             `json:"message"`
+	Data    WalletHoldingsData `json:"data"`
+}
