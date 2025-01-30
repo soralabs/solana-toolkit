@@ -14,6 +14,7 @@ type TokenInformationOutput struct {
 	HolderCount    int      `json:"holder_count"`
 
 	PriceChange *PriceChange `json:"price_change"`
+	Volume      *Volume      `json:"volume"`
 }
 
 type Metadata struct {
@@ -50,4 +51,11 @@ type PriceChange struct {
 	H6  float64 `json:"h6"`
 	H1  float64 `json:"h1"`
 	M5  float64 `json:"m5"`
+}
+
+type Volume struct {
+	USD24H float64 `json:"usd_24h"`
+	USD6H  float64 `json:"usd_6h"`
+	USD1H  float64 `json:"usd_1h"`
+	USD5M  float64 `json:"usd_5m"`
 }

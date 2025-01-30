@@ -68,48 +68,7 @@ type PairInformation struct {
 			URL  string `json:"url"`
 		} `json:"socials"`
 	} `json:"info"`
-	Labels       []string `json:"labels,omitempty"`
-	PriceChange0 struct {
-		H6  float64 `json:"h6"`
-		H24 float64 `json:"h24"`
-	} `json:"priceChange,omitempty"`
-	PriceChange1 struct {
-		H1  float64 `json:"h1"`
-		H6  float64 `json:"h6"`
-		H24 float64 `json:"h24"`
-	} `json:"priceChange,omitempty"`
-	PriceChange2 struct {
-		H6  float64 `json:"h6"`
-		H24 float64 `json:"h24"`
-	} `json:"priceChange,omitempty"`
-	PriceChange3 struct {
-		H6  float64 `json:"h6"`
-		H24 float64 `json:"h24"`
-	} `json:"priceChange,omitempty"`
-	PriceChange4 struct {
-		H24 float64 `json:"h24"`
-	} `json:"priceChange,omitempty"`
-	PriceChange5 struct {
-		H1  float64 `json:"h1"`
-		H6  float64 `json:"h6"`
-		H24 float64 `json:"h24"`
-	} `json:"priceChange,omitempty"`
-	PriceChange6 struct {
-		H24 float64 `json:"h24"`
-	} `json:"priceChange,omitempty"`
-	PriceChange7 struct {
-		H6  float64 `json:"h6"`
-		H24 float64 `json:"h24"`
-	} `json:"priceChange,omitempty"`
-	PriceChange8 struct {
-		H1  float64 `json:"h1"`
-		H6  float64 `json:"h6"`
-		H24 float64 `json:"h24"`
-	} `json:"priceChange,omitempty"`
-	PriceChange9 struct {
-		H6  float64 `json:"h6"`
-		H24 float64 `json:"h24"`
-	} `json:"priceChange,omitempty"`
+	Labels []string `json:"labels,omitempty"`
 }
 
 type PairInformationResponse struct {

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -148,6 +149,11 @@ func main() {
 				Role:    openai.ChatMessageRoleFunction,
 				Name:    functionCall.Name,
 				Content: string(prettyResult),
+			})
+
+			chatHistory = append(chatHistory, openai.ChatCompletionMessage{
+				Role:    openai.ChatMessageRoleUser,
+				Content: fmt.Sprintf("Interpret the results in a conversational way"),
 			})
 
 			// Get AI interpretation of the results

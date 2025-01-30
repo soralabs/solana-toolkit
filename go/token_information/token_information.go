@@ -142,5 +142,11 @@ func (t *TokenInformationTool) Execute(ctx context.Context, params json.RawMessa
 			H1:  mainPair.PriceChange.H1,
 			M5:  mainPair.PriceChange.M5,
 		},
+		Volume: &Volume{
+			USD24H: mainPair.Volume.H24,
+			USD6H:  mainPair.Volume.H6,
+			USD1H:  mainPair.Volume.H1,
+			USD5M:  mainPair.Volume.M5,
+		},
 	})
 }
